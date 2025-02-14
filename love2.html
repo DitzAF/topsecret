@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Keebie</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive;
+            background-color: #FFE4E1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        .container {
+            text-align: center;
+            background-color: #FFF0F5;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 90%;
+            width: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        h1 {
+            color: #FF69B4;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            z-index: 1;
+        }
+        .btn {
+            padding: 12px 24px;
+            font-size: 1rem;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+            width: 80%;
+            max-width: 200px;
+            z-index: 1;
+        }
+        #yesBtn {
+            background-color: #FF1493;
+            color: white;
+        }
+        #noBtn {
+            background-color: #C0C0C0;
+            color: white;
+        }
+        .hidden {
+            display: none;
+        }
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            background: rgba(255, 255, 255, 0.8);
+            overflow: hidden;
+        }
+        .heart, .flower {
+            position: absolute;
+            animation: float 5s ease-in-out infinite, rotate 10s linear infinite;
+        }
+        .heart {
+            font-size: 2rem;
+            color: #FF69B4;
+        }
+        .flower {
+            font-size: 3rem;
+            color: #DA70D6;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-30px); }
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        #timeTogether {
+            font-size: 1rem;
+            line-height: 1.4;
+            color: #FF1493;
+            text-shadow: 1px 1px 2px #000;
+        }
+        .proposal-decoration {
+            position: absolute;
+            pointer-events: none;
+        }
+        .proposal-decoration.heart {
+            font-size: 3rem;
+            color: #FF69B4;
+        }
+        .proposal-decoration.flower {
+            font-size: 4rem;
+            color: #DA70D6;
+        }
+
+        /* Media query for smaller screens */
+        @media (max-width: 600px) {
+            .proposal-decoration.heart {
+                font-size: 2rem; /* Smaller on small screens */
+            }
+            .proposal-decoration.flower {
+                font-size: 3rem; /* Smaller on small screens */
+            }
+        }
+        @media (min-width: 768px) {
+            .container {
+                padding: 2rem;
+            }
+            h1 {
+                font-size: 2.2rem;
+            }
+            .btn {
+                font-size: 1.2rem;
+            }
+            #timeTogether {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="initialScreen">
+        <h1>For Keebie</h1>
+        <p>Are you Keebie?</p>
+        <button class="btn" onclick="checkIdentity(true)">Yes</button>
+        <button class="btn" onclick="checkIdentity(false)">No</button>
+    </div>
+
+    <div class="container hidden" id="proposalScreen">
+        <h1>Keebie, will you be my Keebentine? :3</h1>
+        <div class="proposal-decoration heart" style="top: 5%; left: 5%;">❤️</div>
+        <div class="proposal-decoration flower" style="top: 15%; right: 5%;">🌸</div>
+        <div class="proposal-decoration heart" style="bottom: 5%; left: 5%;">❤️</div>
+        <div class="proposal-decoration flower" style="bottom: 15%; right: 5%;">🌸</div>
+        <button id="yesBtn" class="btn" onclick="celebrate()">Yes</button>
+        <button id="noBtn" class="btn" ontouchstart="moveNoButton()" onmouseover="moveNoButton()">No</button>
+    </div>
+
+    <div class="container hidden" id="celebrationScreen">
+        <h1>I knew you'd say yes :3</h1>
+        <p id="timeTogether"></p>
+    </div>
+
+    <div class="container hidden" id="wrongPersonScreen">
+        <h1>Then fuck off nosy ass bitch, this aint for you</h1>
+    </div>
+
+    <div class="celebration hidden" id="celebrationEffects"></div>
+
+    <script>
+        let noBtnClicks = 0;
+        const noPrompts = ["Are you sure?", "Why not :(", "Please?", "Pretty please?", "Last chance!"];
+
+        function checkIdentity(isKeebie) {
+            document.getElementById('initialScreen').classList.add('hidden');
+            if (isKeebie) {
+                document.getElementById('proposalScreen').classList.remove('hidden');
+            } else {
+                document.getElementById('wrongPersonScreen').classList.remove('hidden');
+            }
+        }
+
+        function moveNoButton() {
+            const noBtn = document.getElementById('noBtn');
+            const yesBtn = document.getElementById('yesBtn');
+            
+            if (noBtnClicks < noPrompts.length) {
+                noBtn.innerText = noPrompts[noBtnClicks];
+                noBtnClicks++;
+            } else {
+                noBtn.innerText = "Yes";
+                noBtn.onclick = celebrate;
+                noBtn.ontouchstart = celebrate;
+            }
+
+            const maxX = window.innerWidth - noBtn.offsetWidth;
+            const maxY = window.innerHeight - noBtn.offsetHeight;
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = Math.random() * maxX + 'px';
+            noBtn.style.top = Math.random() * maxY + 'px';
+
+            yesBtn.style.fontSize = (parseFloat(getComputedStyle(yesBtn).fontSize) + 1) + 'px';
+        }
+
+        function celebrate() {
+            document.getElementById('proposalScreen').classList.add('hidden');
+            document.getElementById('celebrationScreen').classList.add('hidden');
+            const celebrationEffects = document.getElementById('celebrationEffects');
+            celebrationEffects.classList.remove('hidden');
+            celebrationEffects.innerHTML = '';
+
+            const numHearts = 30;
+            const numFlowers = 20;
+
+            for (let i = 0; i < numHearts; i++) {
+                createCelebrationEmoji('❤️');
+            }
+
+            for (let i = 0; i < numFlowers; i++) {
+                createCelebrationEmoji('🌸');
+            }
+
+            function createCelebrationEmoji(emojiText) {
+                const emoji = document.createElement('div');
+                emoji.innerHTML = emojiText;
+                emoji.classList.add(emojiText === '❤️' ? 'heart' : 'flower');
+                emoji.style.fontSize = (Math.random() * 2 + 2) + 'rem';
+                emoji.style.position = 'fixed';
+                emoji.style.left = Math.random() * 20 + 'vw';
+                emoji.style.top = Math.random() * 20 + 'vh';
+                emoji.style.animationDuration = (Math.random() * 5 + 3) + 's';
+                emoji.style.animationName = 'float, rotate';
+                emoji.style.animationIterationCount = 'infinite';
+
+                if (Math.random() < 0.5) {
+                    emoji.style.left = (Math.random() * 20) + 'vw';
+                } else {
+                    emoji.style.left = (80 + Math.random() * 20) + 'vw';
+                }
+
+                if (Math.random() < 0.5) {
+                    emoji.style.top = (Math.random() * 20) + 'vh';
+                } else {
+                    emoji.style.top = (80 + Math.random() * 20) + 'vh';
+                }
+                celebrationEffects.appendChild(emoji);
+            }
+
+            setTimeout(() => {
+                document.getElementById('celebrationScreen').classList.remove('hidden');
+                updateTimeTogether();
+                setInterval(updateTimeTogether, 1000);
+            }, 2000);
+        }
+
+        function updateTimeTogether() {
+            const start = new Date('June 21, 2024 00:00:00').getTime();
+            const now = new Date().getTime();
+            const difference = now - start;
+
+            const seconds = Math.floor(difference / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            const months = Math.floor(days / 30.44);
+
+            document.getElementById('timeTogether').innerHTML = 
+                `We've been together for:<br>
+                ${months} months, ${days % 30} days,<br>${hours % 24} hours, ${minutes % 60} minutes,<br>and ${seconds % 60} seconds`;
+        }
+    </script>
+</body>
+</html>
